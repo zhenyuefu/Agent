@@ -1,4 +1,5 @@
-import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 
 public class World {
@@ -14,7 +15,11 @@ public class World {
 
     int activeIndex;
 
-    ArrayList<Agent> agents;
+    //    LinkedList<Agent> agents;
+    LinkedList<PredatorAgent> predatorAgents;
+    LinkedList<PreyAgent> preyAgents;
+    LinkedList<PreyAgent> reproduirePreyAgents;
+    LinkedList<PredatorAgent> reproduirePredatorsAgents;
 
     public World(int __dx, int __dy, boolean __buffering, boolean __cloneBuffer) {
         _dx = __dx;
@@ -27,7 +32,11 @@ public class World {
         Buffer1 = new int[_dx][_dy][3];
         activeIndex = 0;
 
-        agents = new ArrayList<Agent>();
+//        agents = new LinkedList<>();
+        predatorAgents = new LinkedList<>();
+        preyAgents = new LinkedList<>();
+        reproduirePreyAgents = new LinkedList<>();
+        reproduirePredatorsAgents = new LinkedList<>();
 
         for (int x = 0; x != _dx; x++)
             for (int y = 0; y != _dy; y++) {
@@ -116,7 +125,7 @@ public class World {
     /**
      * Update the world state and return an array for the current world state (may be used for display)
      *
-     * @return
+     *
      */
     public void step() {
         stepWorld();
@@ -159,54 +168,82 @@ public class World {
     }
 
     public void add(Agent agent) {
-        agents.add(agent);
+        if (agent instanceof PredatorAgent)
+            predatorAgents.add((PredatorAgent) agent);
+        if (agent instanceof PreyAgent)
+            preyAgents.add((PreyAgent) agent);
     }
 
     public int[] getNumbers() {
-        int [] nb = new int[2];
-        for (Agent agent : agents){
-            if (agent instanceof PreyAgent)
-                nb[0]++;
-            else
-                nb[1]++;
-        }
+        int[] nb = new int[2];
+        preyAgents.forEach(p -> nb[0]++);
+        predatorAgents.forEach(p -> nb[1]++);
         return nb;
     }
+
     public void stepWorld() // world THEN agents
     {
-        ArrayList<Agent> agents_remove = new ArrayList<>();
-        for (Agent i : agents) {
-            if (i instanceof PredatorAgent && !((PredatorAgent) i).isAlive()) agents_remove.add(i);
-            for (Agent j : agents) {
-                if (i == j) continue;
-                if ((i instanceof PredatorAgent) && ((PredatorAgent) i).isAlive() && (j instanceof PreyAgent)) {
-                    if (i._x == j._x && i._y == j._y) {
-                        agents_remove.add(j);
-                        ((PredatorAgent) i).reset_mange();
-                    }
+//        ArrayList<Agent> agents_remove = new ArrayList<>();
+//        for (Agent i : agents) {
+//            if (i instanceof PredatorAgent && !((PredatorAgent) i).isAlive()) agents_remove.add(i);
+//            for (Agent j : agents) {
+//                if (i == j) continue;
+//                if ((i instanceof PredatorAgent) && ((PredatorAgent) i).isAlive() && (j instanceof PreyAgent)) {
+//                    if (i._x == j._x && i._y == j._y) {
+//                        agents_remove.add(j);
+//                        ((PredatorAgent) i).reset_mange();
+//                    }
+//                }
+//            }
+//        }
+//        agents.removeAll(agents_remove);
+
+        Iterator<PredatorAgent> iterPredator = predatorAgents.iterator();
+        while (iterPredator.hasNext()) {
+            PredatorAgent i = iterPredator.next();
+            if (!i.isAlive()) iterPredator.remove();
+            Iterator<PreyAgent> iterPrey = preyAgents.iterator();
+            while (iterPrey.hasNext()) {
+                Agent j = iterPrey.next();
+                if (i._x == j._x && i._y == j._y) {
+                    iterPrey.remove();
+                    i.reset_mange();
                 }
             }
         }
-        agents.removeAll(agents_remove);
     }
 
+    public void reproduire(Agent agent){
+        if (agent instanceof PredatorAgent)
+            reproduirePredatorsAgents.add((PredatorAgent) agent);
+        if (agent instanceof PreyAgent)
+            reproduirePreyAgents.add((PreyAgent) agent);
+    }
     public void stepAgents() // world THEN agents
     {
 
-
-        for (int i = 0; i != agents.size(); i++) {
+        preyAgents.forEach(prey -> {
             synchronized (Buffer0) {
-                agents.get(i).step();
+                prey.step();
             }
-
-        }
+        });
+        predatorAgents.forEach(predator -> {
+            synchronized (Buffer0) {
+                predator.step();
+            }
+        });
+        predatorAgents.addAll(reproduirePredatorsAgents);
+        preyAgents.addAll(reproduirePreyAgents);
+        reproduirePreyAgents.clear();
+        reproduirePredatorsAgents.clear();
     }
 
     public void display(CAImageBuffer image) {
         image.update(this.getCurrentBuffer());
-
-        for (int i = 0; i != agents.size(); i++)
-            image.setPixel(agents.get(i)._x, agents.get(i)._y, agents.get(i)._redValue, agents.get(i)._greenValue, agents.get(i)._blueValue);
+        preyAgents.forEach(p -> image.setPixel(p._x, p._y, p._redValue, p._greenValue, p._blueValue));
+        predatorAgents.forEach(p-> image.setPixel(p._x, p._y, p._redValue, p._greenValue, p._blueValue));
+//        for (int i = 0; i != agents.size(); i++)
+//            image.setPixel(agents.get(i)._x, agents.get(i)._y, agents.get(i)._redValue, agents.get(i)._greenValue, agents.get(i)._blueValue);
     }
 
 }

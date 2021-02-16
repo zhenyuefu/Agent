@@ -32,7 +32,7 @@ public class PredatorAgent extends Agent {
             return;
         }
         if (Math.random() < p_reproduce) {
-            _world.add(new PredatorAgent(_x, _y, _world));
+            _world.reproduire(new PredatorAgent(_x, _y, _world));
         }
         int[] cellColor = _world.getCellState(_x, _y);
 
@@ -49,13 +49,13 @@ public class PredatorAgent extends Agent {
 
         // met a jour: la position de l'agent (depend de l'orientation)
         switch (_orient) {
-// nord
+            // nord
             case 0 -> _y = (_y - 1 + _world.getHeight()) % _world.getHeight();
-// est
+            // est
             case 1 -> _x = (_x + 1 + _world.getWidth()) % _world.getWidth();
-// sud
+            // sud
             case 2 -> _y = (_y + 1 + _world.getHeight()) % _world.getHeight();
-// ouest
+            // ouest
             case 3 -> _x = (_x - 1 + _world.getWidth()) % _world.getWidth();
         }
     }

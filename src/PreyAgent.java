@@ -22,7 +22,7 @@ public class PreyAgent extends Agent {
 		// ... A COMPLETER
 		// reproduire
 		if ( Math.random() < p_reproduce){
-        	_world.add(new PreyAgent(_x, _y, _world));
+        	_world.reproduire(new PreyAgent(_x, _y, _world));
 		}
 
 		int[] cellColor = _world.getCellState(_x, _y);
@@ -38,15 +38,16 @@ public class PreyAgent extends Agent {
 		else
 			_orient = (_orient - 1 + 4) % 4;
 
+
 		// met a jour: la position de l'agent (depend de l'orientation)
 		switch (_orient) {
-// nord
+			// nord
 			case 0 -> _y = (_y - 1 + _world.getHeight()) % _world.getHeight();
-// est
+			// est
 			case 1 -> _x = (_x + 1 + _world.getWidth()) % _world.getWidth();
-// sud
+			// sud
 			case 2 -> _y = (_y + 1 + _world.getHeight()) % _world.getHeight();
-// ouest
+			// ouest
 			case 3 -> _x = (_x - 1 + _world.getWidth()) % _world.getWidth();
 		}
 		
