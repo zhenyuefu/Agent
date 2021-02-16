@@ -204,10 +204,31 @@ public class World {
             if (!i.isAlive()) iterPredator.remove();
             Iterator<PreyAgent> iterPrey = preyAgents.iterator();
             while (iterPrey.hasNext()) {
-                Agent j = iterPrey.next();
+                PreyAgent j = iterPrey.next();
                 if (i._x == j._x && i._y == j._y) {
                     iterPrey.remove();
                     i.reset_mange();
+                    continue;
+                }
+                if (i._x == j._x){
+                    if (i._y == j._y+1) {
+                        i.setDirection(2);
+                        j.setDirection(2);
+                    }
+                    if (i._y == j._y-1){
+                        i.setDirection(0);
+                        j.setDirection(0);
+                    }
+                }
+                if (i._y == j._y){
+                    if (i._x == j._x+1){
+                        i.setDirection(3);
+                        j.setDirection(3);
+                    }
+                    if (i._x == j._x-1){
+                        i.setDirection(1);
+                        j.setDirection(1);
+                    }
                 }
             }
         }

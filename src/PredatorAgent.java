@@ -1,10 +1,11 @@
 public class PredatorAgent extends Agent {
 
-    static double p_reproduce = 0.04;
+    static double p_reproduce = 0.027;
     static int delai_de_famine = 23;
     boolean _predator;
     boolean _alive;
     int it_non_mange;
+    int dir;
 
     public PredatorAgent(int __x, int __y, World __w) {
         super(__x, __y, __w);
@@ -12,6 +13,7 @@ public class PredatorAgent extends Agent {
         _alive = true;
         _predator = true;
         it_non_mange = 0;
+        dir = -1;
     }
 
     public void reset_mange() {
@@ -21,13 +23,25 @@ public class PredatorAgent extends Agent {
     public boolean isAlive() {
         return _alive;
     }
+
+    /*
+     * 0:nord;1:est;2:sud;3:ouest
+     */
+    public void setDirection(int d) {
+        if (dir == -1) {
+            dir = d;
+            return;
+        }
+        if (Math.random()<0.5) dir =d;
+    }
+
     public void step() {
         // met a jour l'agent
 
         // A COMPLETER
         // reproduire
         it_non_mange++;
-        if (it_non_mange > delai_de_famine){
+        if (it_non_mange > delai_de_famine) {
             _alive = false;
             return;
         }
@@ -46,6 +60,8 @@ public class PredatorAgent extends Agent {
             _orient = (_orient + 1) % 4;
         else
             _orient = (_orient - 1 + 4) % 4;
+        if (dir != -1) _orient = dir;
+        dir = -1;
 
         // met a jour: la position de l'agent (depend de l'orientation)
         switch (_orient) {

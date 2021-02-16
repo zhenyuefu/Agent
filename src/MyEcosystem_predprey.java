@@ -63,10 +63,10 @@ public class MyEcosystem_predprey extends CAtoolbox {
             // 2 - update
 
             world.step();
-//			int nb[]= world.getNumbers(); // nb[0] prey nb[1] predator
+			int nb[]= world.getNumbers(); // nb[0] prey nb[1] predator
             // 3 - iterate
 //			try {
-//                out.write(it + "," + nb[0] + "," + nb[1] + "\n");
+                System.out.println(it + "," + nb[0] + "," + nb[1] + "\n");
 //            } catch (IOException e) {
 //                e.printStackTrace();
 //            }
