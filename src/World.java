@@ -3,7 +3,7 @@ import java.util.LinkedList;
 
 
 public class World {
-    static double p_grass = 0.06;
+    static double p_grass = 0.12;
 
     int _dx;
     int _dy;
@@ -179,8 +179,8 @@ public class World {
 
     public int[] getNumbers() {
         int[] nb = new int[2];
-        preyAgents.forEach(p -> nb[0]++);
-        predatorAgents.forEach(p -> nb[1]++);
+        for (PreyAgent ignored : preyAgents) nb[0]++;
+        for (PredatorAgent ignored : predatorAgents) nb[1]++;
         return nb;
     }
 
@@ -201,17 +201,19 @@ public class World {
 //        }
 //        agents.removeAll(agents_remove);
 
-//        Iterator<PreyAgent> iterPrey = preyAgents.iterator();
-//        while (iterPrey.hasNext()) {
-//            PreyAgent j = iterPrey.next();
-//            if (!j.isAlive())
-//            {iterPrey.remove();continue;}
-//            if (grass[j._x][j._y]){
-//                grass[j._x][j._y] = false;
-//                j.reset_mange();
-//            }
-//
-//        }
+        Iterator<PreyAgent> iterPrey = preyAgents.iterator();
+        while (iterPrey.hasNext()) {
+            PreyAgent j = iterPrey.next();
+            if (!j.isAlive()) {
+                iterPrey.remove();
+                continue;
+            }
+            if (grass[j._x][j._y]) {
+                grass[j._x][j._y] = false;
+                j.reset_mange();
+            }
+
+        }
         Iterator<PredatorAgent> iterPredator = predatorAgents.iterator();
         while (iterPredator.hasNext()) {
             PredatorAgent i = iterPredator.next();
@@ -219,17 +221,17 @@ public class World {
                 iterPredator.remove();
                 continue;
             }
-            Iterator<PreyAgent> iterPrey = preyAgents.iterator();
+            iterPrey = preyAgents.iterator();
             while (iterPrey.hasNext()) {
                 PreyAgent j = iterPrey.next();
-                if (!j.isAlive()) {
-                    iterPrey.remove();
-                    continue;
-                }
-                if (grass[j._x][j._y]) {
-                    grass[j._x][j._y] = false;
-                    j.reset_mange();
-                }
+//                if (!j.isAlive()) {
+//                    iterPrey.remove();
+//                    continue;
+//                }
+//                if (grass[j._x][j._y]) {
+//                    grass[j._x][j._y] = false;
+//                    j.reset_mange();
+//                }
                 if (i._x == j._x && i._y == j._y) {
                     iterPrey.remove();
                     i.reset_mange();
@@ -281,16 +283,16 @@ public class World {
     public void stepAgents() // world THEN agents
     {
 
-        preyAgents.forEach(prey -> {
+        for (PreyAgent prey : preyAgents) {
             synchronized (Buffer0) {
                 prey.step();
             }
-        });
-        predatorAgents.forEach(predator -> {
+        }
+        for (PredatorAgent predator : predatorAgents) {
             synchronized (Buffer0) {
                 predator.step();
             }
-        });
+        }
         predatorAgents.addAll(reproduirePredatorsAgents);
         preyAgents.addAll(reproduirePreyAgents);
         reproduirePreyAgents.clear();
@@ -299,8 +301,12 @@ public class World {
 
     public void display(CAImageBuffer image) {
         image.update(this.getCurrentBuffer());
-        preyAgents.forEach(p -> image.setPixel(p._x, p._y, p._redValue, p._greenValue, p._blueValue));
-        predatorAgents.forEach(p -> image.setPixel(p._x, p._y, p._redValue, p._greenValue, p._blueValue));
+        for (PreyAgent preyAgent : preyAgents) {
+            image.setPixel(preyAgent._x, preyAgent._y, preyAgent._redValue, preyAgent._greenValue, preyAgent._blueValue);
+        }
+        for (PredatorAgent p : predatorAgents) {
+            image.setPixel(p._x, p._y, p._redValue, p._greenValue, p._blueValue);
+        }
 //        for (int i = 0; i != agents.size(); i++)
 //            image.setPixel(agents.get(i)._x, agents.get(i)._y, agents.get(i)._redValue, agents.get(i)._greenValue, agents.get(i)._blueValue);
     }

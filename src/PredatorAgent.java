@@ -1,9 +1,7 @@
-import java.util.Iterator;
-
 public class PredatorAgent extends Agent {
 
-    static double p_reproduce = 0.03;
-    static int delai_de_famine = 14;
+    static double p_reproduce = 0.02;
+    static int delai_de_famine = 30;
     boolean _predator;
     boolean _alive;
     int it_non_mange;
@@ -34,7 +32,7 @@ public class PredatorAgent extends Agent {
             dir = d;
             return;
         }
-        if (Math.random()<0.5) dir =d;
+        if (Math.random() < 0.5) dir = d;
     }
 
     public void step() {

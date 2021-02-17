@@ -49,12 +49,12 @@ public class MyEcosystem_predprey extends CAtoolbox {
 
         BufferedWriter out = null;
         try {
-            out = new BufferedWriter(new FileWriter("Preda_" + PredatorAgent.p_reproduce + "Prey_" + PreyAgent.p_reproduce + "L_" + PredatorAgent.delai_de_famine + ".csv", true));
+            out = new BufferedWriter(new FileWriter("Preda_" + PredatorAgent.p_reproduce + "_" + PredatorAgent.delai_de_famine + "_Prey_" + PreyAgent.p_reproduce + "_" + PreyAgent.delai_de_famine + "_grass_" + World.p_grass + ".csv", true));
         } catch (IOException e) {
             e.printStackTrace();
         }
         // mise a jour de l'état du monde
-        while (it <= 1000) {
+        while (it <= 2000) {
             // 1 - display
 
             if (it % displaySpeed == 0)
@@ -63,9 +63,9 @@ public class MyEcosystem_predprey extends CAtoolbox {
             // 2 - update
 
             world.step();
-			int[] nb = world.getNumbers(); // nb[0] prey nb[1] predator
+            int[] nb = world.getNumbers(); // nb[0] prey nb[1] predator
             // 3 - iterate
-			try {
+            try {
                 out.write(it + "," + nb[0] + "," + nb[1] + "\n");
             } catch (IOException e) {
                 e.printStackTrace();
@@ -79,8 +79,8 @@ public class MyEcosystem_predprey extends CAtoolbox {
         }
 
         try {
-			assert out != null;
-			out.close();
+            assert out != null;
+            out.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
