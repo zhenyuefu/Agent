@@ -3,6 +3,7 @@ import java.util.LinkedList;
 
 
 public class World {
+    static double p_grass = 0.06;
 
     int _dx;
     int _dy;
@@ -21,6 +22,8 @@ public class World {
     LinkedList<PreyAgent> reproduirePreyAgents;
     LinkedList<PredatorAgent> reproduirePredatorsAgents;
 
+    boolean[][] grass;
+
     public World(int __dx, int __dy, boolean __buffering, boolean __cloneBuffer) {
         _dx = __dx;
         _dy = __dy;
@@ -31,6 +34,7 @@ public class World {
         Buffer0 = new int[_dx][_dy][3];
         Buffer1 = new int[_dx][_dy][3];
         activeIndex = 0;
+        grass = new boolean[_dx][_dy];
 
 //        agents = new LinkedList<>();
         predatorAgents = new LinkedList<>();
@@ -46,6 +50,7 @@ public class World {
                 Buffer1[x][y][0] = 255;
                 Buffer1[x][y][1] = 255;
                 Buffer1[x][y][2] = 255;
+                grass[x][y] = (0.5 >= Math.random());
             }
     }
 
@@ -124,8 +129,6 @@ public class World {
 
     /**
      * Update the world state and return an array for the current world state (may be used for display)
-     *
-     *
      */
     public void step() {
         stepWorld();
@@ -198,48 +201,83 @@ public class World {
 //        }
 //        agents.removeAll(agents_remove);
 
+//        Iterator<PreyAgent> iterPrey = preyAgents.iterator();
+//        while (iterPrey.hasNext()) {
+//            PreyAgent j = iterPrey.next();
+//            if (!j.isAlive())
+//            {iterPrey.remove();continue;}
+//            if (grass[j._x][j._y]){
+//                grass[j._x][j._y] = false;
+//                j.reset_mange();
+//            }
+//
+//        }
         Iterator<PredatorAgent> iterPredator = predatorAgents.iterator();
         while (iterPredator.hasNext()) {
             PredatorAgent i = iterPredator.next();
-            if (!i.isAlive()) iterPredator.remove();
+            if (!i.isAlive()) {
+                iterPredator.remove();
+                continue;
+            }
             Iterator<PreyAgent> iterPrey = preyAgents.iterator();
             while (iterPrey.hasNext()) {
                 PreyAgent j = iterPrey.next();
+                if (!j.isAlive()) {
+                    iterPrey.remove();
+                    continue;
+                }
+                if (grass[j._x][j._y]) {
+                    grass[j._x][j._y] = false;
+                    j.reset_mange();
+                }
                 if (i._x == j._x && i._y == j._y) {
                     iterPrey.remove();
                     i.reset_mange();
                     continue;
                 }
-                if (i._x == j._x){
-                    if (i._y == j._y+1) {
-                        i.setDirection(2);
-                        j.setDirection(2);
-                    }
-                    if (i._y == j._y-1){
+                if (i._x == j._x) {
+                    if (i._y == j._y + 1) {
                         i.setDirection(0);
                         j.setDirection(0);
+                        continue;
+                    }
+                    if (i._y == j._y - 1) {
+                        i.setDirection(2);
+                        j.setDirection(2);
+                        continue;
                     }
                 }
-                if (i._y == j._y){
-                    if (i._x == j._x+1){
+                if (i._y == j._y) {
+                    if (i._x == j._x + 1) {
                         i.setDirection(3);
                         j.setDirection(3);
+                        continue;
                     }
-                    if (i._x == j._x-1){
+                    if (i._x == j._x - 1) {
                         i.setDirection(1);
                         j.setDirection(1);
                     }
                 }
             }
         }
+        reproduire_glass();
     }
 
-    public void reproduire(Agent agent){
+    public void reproduire(Agent agent) {
         if (agent instanceof PredatorAgent)
             reproduirePredatorsAgents.add((PredatorAgent) agent);
         if (agent instanceof PreyAgent)
             reproduirePreyAgents.add((PreyAgent) agent);
     }
+
+    public void reproduire_glass() {
+        for (int x = 0; x != _dx; x++)
+            for (int y = 0; y != _dy; y++)
+                if (!(grass[x][y])) {
+                    grass[x][y] = (p_grass >= Math.random());
+                }
+    }
+
     public void stepAgents() // world THEN agents
     {
 
@@ -262,7 +300,7 @@ public class World {
     public void display(CAImageBuffer image) {
         image.update(this.getCurrentBuffer());
         preyAgents.forEach(p -> image.setPixel(p._x, p._y, p._redValue, p._greenValue, p._blueValue));
-        predatorAgents.forEach(p-> image.setPixel(p._x, p._y, p._redValue, p._greenValue, p._blueValue));
+        predatorAgents.forEach(p -> image.setPixel(p._x, p._y, p._redValue, p._greenValue, p._blueValue));
 //        for (int i = 0; i != agents.size(); i++)
 //            image.setPixel(agents.get(i)._x, agents.get(i)._y, agents.get(i)._redValue, agents.get(i)._greenValue, agents.get(i)._blueValue);
     }

@@ -1,7 +1,9 @@
+import java.util.Iterator;
+
 public class PredatorAgent extends Agent {
 
-    static double p_reproduce = 0.027;
-    static int delai_de_famine = 23;
+    static double p_reproduce = 0.03;
+    static int delai_de_famine = 14;
     boolean _predator;
     boolean _alive;
     int it_non_mange;
@@ -39,12 +41,13 @@ public class PredatorAgent extends Agent {
         // met a jour l'agent
 
         // A COMPLETER
-        // reproduire
+        // mange
         it_non_mange++;
         if (it_non_mange > delai_de_famine) {
             _alive = false;
             return;
         }
+        // reproduire
         if (Math.random() < p_reproduce) {
             _world.reproduire(new PredatorAgent(_x, _y, _world));
         }
@@ -62,6 +65,7 @@ public class PredatorAgent extends Agent {
             _orient = (_orient - 1 + 4) % 4;
         if (dir != -1) _orient = dir;
         dir = -1;
+
 
         // met a jour: la position de l'agent (depend de l'orientation)
         switch (_orient) {
